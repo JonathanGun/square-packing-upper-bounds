@@ -4,13 +4,13 @@ Copyright 2026 JoeGun.
 
 ## Data and text
 
-The witness files (`n-*-candidate.yaml`), the decimal poses (`n-*-decimal-pose.yaml`), the checker outputs and the README are licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0).
+The witness files (`n-*-candidate.yaml`), the decimal poses (`n-*-decimal-pose.yaml`), the checker outputs, the files in `local-minimum/` except `make-input.py`, and the README are licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0).
 
 The packings build on public packings by Tomáš Kodaj. This licence covers our own contribution. It does not change the terms of his work.
 
 ## Code
 
-`check.py` is licensed under the MIT License:
+`check.py`, `make-pose.py` and `local-minimum/make-input.py` are licensed under the MIT License:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -20,4 +20,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Third-party notice
 
-`LICENSE-evand-square-packing.txt` is Evan Daniel's MIT notice for [evand/square-packing](https://github.com/evand/square-packing), whose quench code was used in the search. None of his code is in this repository.
+`LICENSE-evand-square-packing.txt` is Evan Daniel's MIT notice for [evand/square-packing](https://github.com/evand/square-packing), whose quench code was used in the search. His `exactsolve.py` made the logs and outputs in `local-minimum/`. None of his code is in this repository.

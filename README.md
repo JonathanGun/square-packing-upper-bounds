@@ -2,7 +2,8 @@
 
 Exact rational packings of unit squares in a square, filed with [jlevy/squares](https://github.com/jlevy/squares) as a registration request.
 Each one is a public Kaggle packing by Tomáš Kodaj that we improved further.
-They are upper bounds only. We make no optimality or rigidity claim.
+They are upper bounds. We make no optimality claim.
+Four of the five are local minima by a numerical check, and none is rigid (see Local minimum check).
 
 Reported by JoeGun ([@JonathanGun](https://github.com/JonathanGun)).
 
@@ -28,7 +29,8 @@ Reported by JoeGun ([@JonathanGun](https://github.com/JonathanGun)).
 | `packing-witness-verify.txt` | output of `packing-witness verify` from jlevy/squares `main` at `31ddae6` |
 | `check.py` | our own exact checker, written apart from the registry's code |
 | `check-output.txt` | its output |
-| `LICENSE-evand-square-packing.txt` | Evan Daniel's MIT notice, for his quench code |
+| `local-minimum/` | input, log and output of the local minimum check for each count |
+| `LICENSE-evand-square-packing.txt` | Evan Daniel's MIT notice, for his quench code and his `exactsolve.py` |
 
 SHA-256 of the witnesses:
 
@@ -77,6 +79,51 @@ The tool's code was not changed.
 
 The promotion used the registry's own tool. Therefore `packing-witness verify` does not check the rounding independently. `check.py` shares only the definitions (unit square, box, disjoint interiors) and the YAML file.
 
+## **Local minimum check**
+
+We ran `exactsolve.py` from [evand/square-packing](https://github.com/evand/square-packing) (MIT, at `6067db5`) on all five packings. It gave a result for four of them.
+
+| n | KKT point | local minimum | rigid | flat motions | least contact force | side at the exact point |
+|---|---|---|---|---|---|---|
+| 127 | yes | yes | no | 52 | 6.66e-8 | 11.801753890364738880 |
+| 204 | no result | no result | no result | | | |
+| 232 | yes | yes | no | 110 | 7.28e-7 | 15.759531623540125992 |
+| 264 | yes | yes | no | 155 | 6.75e-7 | 16.773807597982933201 |
+| 305 | yes | yes | no | 132 | 2.55e-6 | 17.945762359467513364 |
+
+The tool works in 80-digit arithmetic. Its steps:
+
+- It lists the contacts of the input (corner on side, corner on wall).
+- It solves for the nearby point where those contacts are exact. The Newton residual ends below 1e-70.
+- It looks for contact forces that are all above zero and balance every square. That is the KKT condition.
+- It checks the reduced Hessian of the Lagrangian on the directions that the contacts leave free.
+- It tests every corner-on-corner touch as a choice between separating lines (MILP).
+
+How to read the table:
+
+- **KKT point.** The contact forces are positive and the balance residual is 0.
+- **Local minimum.** The tool's verdict is "local minimum of S, strict modulo N exact flat motions". A flat motion is a slide of some squares that keeps the side the same. No small move makes the side shorter.
+- **Rigid.** No. The flat motions mean that the packing can move, so it is not isolated.
+- **n = 204.** Its load rests on 30 corner-on-corner touches. The tool found no smooth equilibrium, and its Newton step diverged. There is no result in either direction.
+
+Limits of this check:
+
+- It is a numerical check at 80 digits. It is not a proof.
+- The result is about the exact touching point in `local-minimum/n-NNN-input.exact.txt`. The witnesses above are loosened copies of that point. Their sides are larger by 1.9e-11 to 4.0e-9.
+- The tool wrote its own rational certificate for each exact point (`n-NNN-input.cert`, its exact check says `VALID`). We do not claim those lower sides here.
+- At n = 232 the tool moved 22 loose squares into the contact system. The least gap between pairs that do not touch is 1.5e-12 there.
+- One tool by one author made this check. We did not run the `local_rigidity` code of jlevy/squares.
+
+To rerun, from a checkout of evand/square-packing at `6067db5`:
+
+```bash
+PYTHONPATH=search/exact:search/packer uv run --python 3.13 \
+  --with numpy==2.4.2 --with scipy==1.17.0 --with mpmath==1.3.0 --with sympy==1.14.0 \
+  python search/exact/exactsolve.py <this repository>/local-minimum/n-127-input.txt --out out/
+```
+
+`local-minimum/make-input.py` writes the input file from a pose file. The package versions are the ones that the tool's own `env.sh` pins.
+
 ## **Lineage and credit**
 
 - **Tomáš Kodaj** published all five parent packings in his Kaggle notebook [Squares in Squares | [22.1636]](https://www.kaggle.com/code/tomkodaj/squares-in-squares-22-1636). Its last run was 2026-11-13 09:48 UTC. We downloaded it at 10:17 UTC that day. We did not trace what his packings build on.
@@ -98,7 +145,8 @@ Suggested credit: Tomáš Kodaj as finder at all five counts, improved by JoeGun
 
 ## **Not done**
 
-- No local-optimality, rigidity or KKT analysis.
+- No local minimum result at n = 204.
+- No proof of the local minimum results. They are numerical.
 - No proof-assistant check and no human review outside this project.
 - No measurement of the least pair margin or of the contraction margin.
 - The licence of Kodaj's notebook was not checked.
@@ -119,8 +167,8 @@ Kodaj's notebook also holds n = 270 at 16.927469594094, below the record's 16.92
 
 ## **AI assistance**
 
-AI agents wrote and ran the search code, the checker and this filing. JoeGun directed the work.
+AI agents wrote and ran the search code, the checker and this filing. They also ran the local minimum check. JoeGun directed the work.
 
 ## **Licence**
 
-See `LICENSE.md`. The witnesses, poses, outputs and text are CC BY 4.0. `check.py` is MIT.
+See `LICENSE.md`. The witnesses, poses, outputs and text are CC BY 4.0. The scripts are MIT.
